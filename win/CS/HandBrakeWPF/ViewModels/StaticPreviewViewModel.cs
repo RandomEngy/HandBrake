@@ -11,20 +11,20 @@ namespace HandBrakeWPF.ViewModels
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Threading;
     using System.Windows;
     using System.Windows.Media.Imaging;
-   
-    using HandBrakeWPF.Helpers;
+
+    using HandBrake.Interop.Interop.Interfaces;
 
     using HandBrakeWPF.Properties;
     using HandBrakeWPF.Services.Encode.Model.Models;
     using HandBrakeWPF.Services.Interfaces;
     using HandBrakeWPF.Services.Logging.Interfaces;
+    using HandBrakeWPF.Services.Queue.Interfaces;
     using HandBrakeWPF.Services.Queue.Model;
     using HandBrakeWPF.Services.Scan.Interfaces;
     using HandBrakeWPF.Services.Scan.Model;
@@ -46,6 +46,7 @@ namespace HandBrakeWPF.ViewModels
         private readonly ILog logService;
         private readonly ILogInstanceManager logInstanceManager;
         private readonly IPortService portService;
+        private readonly IQueueService mainEncodeInstance;
         private readonly IUserSettingService userSettingService;
 
         private IEncode encodeService;
@@ -64,7 +65,8 @@ namespace HandBrakeWPF.ViewModels
 
         private string mediaPlayerSource;
 
-        public StaticPreviewViewModel(IScan scanService, IUserSettingService userSettingService, IErrorService errorService, ILog logService, ILogInstanceManager logInstanceManager, IPortService portService)
+        public StaticPreviewViewModel(IScan scanService, IUserSettingService userSettingService, IErrorService errorService, ILog logService, 
+            ILogInstanceManager logInstanceManager, IPortService portService, IQueueService mainEncodeInstance)
         {
             this.scanService = scanService;
             this.selectedPreviewImage = 1;
@@ -77,6 +79,7 @@ namespace HandBrakeWPF.ViewModels
             this.logService = logService;
             this.logInstanceManager = logInstanceManager;
             this.portService = portService;
+            this.mainEncodeInstance = mainEncodeInstance;
 
             this.Title = "Preview";
             this.Percentage = "0.00%";
@@ -151,6 +154,8 @@ namespace HandBrakeWPF.ViewModels
         public EncodeTask Task { get; set; }
 
         public Source ScannedSource { get; set; }
+
+        public Title SelectedTitle { get; set; }
 
         public bool IsMediaPlayerVisible
         {
@@ -331,9 +336,10 @@ namespace HandBrakeWPF.ViewModels
             }
         }
         
-        public void UpdatePreviewFrame(EncodeTask task, Source scannedSource)
+        public void UpdatePreviewFrame(Title selectedTitle, EncodeTask task, Source scannedSource)
         {
             this.Task = task;
+            this.SelectedTitle = selectedTitle;
 
             // The Built-in Player does not support WebM or Mpeg2
             if (this.Task != null && 
@@ -347,7 +353,7 @@ namespace HandBrakeWPF.ViewModels
             this.Title = Resources.StaticPreviewViewModel_Title;
             this.ScannedSource = scannedSource;
         }
-
+        
         public void NextPreview()
         {
             int maxPreview = this.userSettingService.GetUserSetting<int>(UserSettingConstants.PreviewScanCount);
@@ -441,7 +447,7 @@ namespace HandBrakeWPF.ViewModels
             }
 
             try
-            {
+            {  
                 this.IsEncoding = true;
                 if (File.Exists(this.CurrentlyPlaying))
                 {
@@ -521,7 +527,16 @@ namespace HandBrakeWPF.ViewModels
                 encodeTask.SubtitleTracks.Remove(scanTrack);
             }
 
-            QueueTask task = new QueueTask(encodeTask, this.ScannedSource.ScanPath, null, false, null);
+            if (!this.userSettingService.GetUserSetting<bool>(UserSettingConstants.ProcessIsolationEnabled) 
+                && encodeTask.VideoEncoder.IsX265 
+                && this.mainEncodeInstance.IsEncoding)
+            {
+                this.errorService.ShowMessageBox(Resources.StaticPreviewViewModel_MultipleEncodes, Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                this.IsEncoding = false;
+                return;
+            }
+
+            QueueTask task = new QueueTask(encodeTask, this.SelectedTitle.SourcePath, null, false, null);
             ThreadPool.QueueUserWorkItem(this.CreatePreview, task);
         }
 
@@ -546,16 +561,25 @@ namespace HandBrakeWPF.ViewModels
 
         public void HandleMediaError(Exception error)
         {
-            this.logService.LogMessage(
-                error != null
-                    ? string.Format("# Video Preview: Unable to Play: {0}", error)
-                    : string.Format("# Video Preview: Unable to Play: Unknown Reason. Maybe a missing codec pack."));
+            if (!this.UseExternalPlayer)
+            {
+                this.logService.LogMessage(
+                    error != null
+                        ? string.Format("# Video Preview: Unable to Play: {0}", error)
+                        : string.Format(
+                            "# Video Preview: Unable to Play: Unknown Reason. Maybe a missing codec pack."));
 
-            this.errorService.ShowMessageBox(
-                Resources.StaticPreviewViewModel_MediaError,
-                Resources.Error,
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+                this.errorService.ShowMessageBox(
+                    Resources.StaticPreviewViewModel_MediaError,
+                    Resources.Error,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+            public void CloseWindow()
+        {
+            this.TryClose();
         }
 
         private void PlayFile()
@@ -606,6 +630,7 @@ namespace HandBrakeWPF.ViewModels
                 this.errorService.ShowMessageBox(Resources.StaticPreviewViewModel_AlreadyEncoding, Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
 
             this.encodeService = new LibEncode(userSettingService, logInstanceManager, 0, portService); // Preview needs a separate instance rather than the shared singleton. This could maybe do with being refactored at some point
 

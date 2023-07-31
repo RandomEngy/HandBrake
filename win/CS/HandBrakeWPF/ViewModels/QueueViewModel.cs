@@ -32,9 +32,8 @@ namespace HandBrakeWPF.ViewModels
     using HandBrakeWPF.Services.Interfaces;
     using HandBrakeWPF.Services.Queue.Interfaces;
     using HandBrakeWPF.Services.Queue.Model;
+    using HandBrakeWPF.Utilities.FileDialogs;
     using HandBrakeWPF.ViewModels.Interfaces;
-
-    using Microsoft.Win32;
 
     public class QueueViewModel : ViewModelBase, IQueueViewModel
     {
@@ -255,8 +254,8 @@ namespace HandBrakeWPF.ViewModels
             if (this.queueProcessor.IsEncoding)
             {
                 MessageBoxResult result = this.errorService.ShowMessageBox(
-                    "There are currently jobs running. Would you like to complete the current jobs before stopping the queue?",
-                    "Confirm",
+                    Resources.QueueViewModel_StopButContinueJob,
+                    Resources.Question,
                     MessageBoxButton.YesNoCancel,
                     MessageBoxImage.Question);
 
@@ -270,16 +269,17 @@ namespace HandBrakeWPF.ViewModels
                 }
                 else
                 {
+                    this.IsQueueRunning = false;
                     this.queueProcessor.Stop(true);
                 }
             }
             else
             {
+                this.IsQueueRunning = false;
                 this.queueProcessor.Stop(true);
             }
 
             this.JobsPending = string.Format(Resources.QueueViewModel_JobsPending, this.queueProcessor.Count);
-            this.IsQueueRunning = false;
         }
 
         public void RemoveSelectedJobs()
@@ -564,6 +564,11 @@ namespace HandBrakeWPF.ViewModels
         public void MoveToBottom()
         {
             this.queueProcessor.MoveToBottom(this.SelectedItems);
+        }
+
+        public void BackupQueue()
+        {
+            this.queueProcessor.BackupQueue(string.Empty);
         }
 
         public override void Activate()

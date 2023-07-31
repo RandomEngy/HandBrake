@@ -53,7 +53,8 @@ typedef struct
 #endif
 } hb_display_t;
 
-hb_display_t * hb_display_init(const char         *  driver_name,
+hb_display_t * hb_display_init(const char         * driver_name,
+                               const uint32_t       dri_render_node,
                                const char * const * interface_names);
 void           hb_display_close(hb_display_t ** _d);
 
@@ -151,10 +152,7 @@ void hb_get_user_config_filename( char name[1024], char *fmt, ... );
  ***********************************************************************/
 typedef struct hb_thread_s hb_thread_t;
 
-#if defined( SYS_BEOS )
-#  define HB_LOW_PRIORITY    5
-#  define HB_NORMAL_PRIORITY 10
-#elif defined( SYS_DARWIN )
+#if defined( SYS_DARWIN )
 #  define HB_LOW_PRIORITY    31
 #  define HB_NORMAL_PRIORITY 31
 #elif defined( SYS_CYGWIN )

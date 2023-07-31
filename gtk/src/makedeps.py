@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from __future__ import print_function
 import collections
 import sys
 import json
@@ -17,11 +16,11 @@ dep_map = (
     DepEntry("angle_count", "angle_label", "1", True, True),
     DepEntry("vquality_type_bitrate", "VideoAvgBitrate", "1", False, False),
     DepEntry("vquality_type_constant", "VideoQualitySlider", "1", False, False),
-    DepEntry("vquality_type_constant", "VideoTwoPass", "1", True, False),
-    DepEntry("vquality_type_constant", "VideoTurboTwoPass", "1", True, False),
+    DepEntry("vquality_type_constant", "VideoMultiPass", "1", True, False),
+    DepEntry("vquality_type_constant", "VideoTurboMultiPass", "1", True, False),
     DepEntry("VideoFramerate", "VideoFrameratePFR", "auto", True, True),
     DepEntry("VideoFramerate", "VideoFramerateVFR", "auto", False, True),
-    DepEntry("VideoTwoPass", "VideoTurboTwoPass", "1", False, False),
+    DepEntry("VideoMultiPass", "VideoTurboMultiPass", "1", False, False),
     DepEntry("PictureCombDetectPreset", "PictureCombDetectCustom", "custom", False, True),
     DepEntry("PictureDeinterlaceFilter", "PictureDeinterlacePreset", "off", True, True),
     DepEntry("PictureDeinterlaceFilter", "PictureDeinterlacePresetLabel", "off", True, True),
@@ -53,12 +52,13 @@ dep_map = (
     DepEntry("PictureDetelecine", "PictureDetelecineCustom", "custom", False, True),
     DepEntry("PictureColorspacePreset", "PictureColorspaceCustom", "custom", False, True),
     DepEntry("VideoEncoder", "x264FastDecode", "svt_av1|svt_av1_10bit|x264|x264_10bit", False, True),
-    DepEntry("VideoEncoder", "VideoOptionExtraWindow", "svt_av1|svt_av1_10bit|x264|x264_10bit|x265|x265_10bit|x265_12bit|x265_16bit|mpeg4|mpeg2|VP8|VP9|VP9_10bit|qsv_av1|qsv_av1_10bit|qsv_h264|qsv_h265|qsv_h265_10bit", False, True),
-    DepEntry("VideoEncoder", "VideoOptionExtraLabel", "svt_av1|svt_av1_10bit|x264|x264_10bit|x265|x265_10bit|x265_12bit|x265_16bit|mpeg4|mpeg2|VP8|VP9|VP9_10bit|qsv_av1|qsv_av1_10bit|qsv_h264|qsv_h265|qsv_h265_10bit", False, True),
+    DepEntry("VideoEncoder", "VideoOptionExtraWindow", "svt_av1|svt_av1_10bit|x264|x264_10bit|x265|x265_10bit|x265_12bit|x265_16bit|mpeg4|mpeg2|VP8|VP9|VP9_10bit|qsv_av1|qsv_av1_10bit|qsv_h264|qsv_h265|qsv_h265_10bit|nvenc_h264|nvenc_h265|nvenc_h265_10bit|nvenc_av1|nvenc_av1_10bit|null, ", False, True),
+    DepEntry("VideoEncoder", "VideoOptionExtraLabel", "svt_av1|svt_av1_10bit|x264|x264_10bit|x265|x265_10bit|x265_12bit|x265_16bit|mpeg4|mpeg2|VP8|VP9|VP9_10bit|qsv_av1|qsv_av1_10bit|qsv_h264|qsv_h265|qsv_h265_10bit|nvenc_h264|nvenc_h265|nvenc_h265_10bit|nvenc_av1|nvenc_av1_10bit|null", False, True),
     DepEntry("auto_name", "autoname_box", "1", False, False),
     DepEntry("CustomTmpEnable", "CustomTmpDir", "1", False, False),
     DepEntry("PresetCategory", "PresetCategoryName", "new", False, True),
     DepEntry("PresetCategory", "PresetCategoryEntryLabel", "new", False, True),
+    DepEntry("DiskFreeCheck", "DiskFreeLimit", "1", False, False),
     )
 
 def main():

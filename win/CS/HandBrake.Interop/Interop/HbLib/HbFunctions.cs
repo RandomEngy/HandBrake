@@ -49,7 +49,10 @@ namespace HandBrake.Interop.Interop.HbLib
         public static extern void hb_dvd_set_dvdnav(int enable);
 
         [DllImport("hb", EntryPoint = "hb_scan", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void hb_scan(IntPtr hbHandle, IntPtr path, int title_index, int preview_count, int store_previews, ulong min_duration);
+        public static extern void hb_scan(IntPtr hbHandle, IntPtr path, int title_index, int preview_count, int store_previews, ulong min_duration, int crop_auto_switch_threshold, int crop_median_threshold, IntPtr exclude_extensions);
+
+        [DllImport("hb", EntryPoint = "hb_scan_list", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void hb_scan_list(IntPtr hbHandle, IntPtr paths, int title_index, int preview_count, int store_previews, ulong min_duration, int crop_auto_switch_threshold, int crop_median_threshold, IntPtr exclude_extensions);
 
         [DllImport("hb", EntryPoint = "hb_scan_stop", CallingConvention = CallingConvention.Cdecl)]
         public static extern void hb_scan_stop(IntPtr hbHandle);
@@ -150,8 +153,8 @@ namespace HandBrake.Interop.Interop.HbLib
         [DllImport("hb", EntryPoint = "hb_video_quality_get_name", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr hb_video_quality_get_name(uint codec);
 
-        [DllImport("hb", EntryPoint = "hb_video_twopass_is_supported", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int hb_video_twopass_is_supported(uint codec);
+        [DllImport("hb", EntryPoint = "hb_video_multipass_is_supported", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int hb_video_multipass_is_supported(uint codec);
 
         [DllImport("hb", EntryPoint = "hb_video_encoder_is_supported", CallingConvention = CallingConvention.Cdecl)]
         public static extern int hb_video_encoder_is_supported(int encoder);

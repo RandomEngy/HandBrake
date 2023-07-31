@@ -92,5 +92,8 @@ namespace HandBrakeWPF
         public const string UseIsoDateFormat = "UseIsoDateFormat";
         public const string ExtendedQueueDisplay = "ExtendedQueueDisplay";
         public const string HardwareDetectTimeoutSeconds = "HardwareDetectTimeoutSeconds";
+        public const string ShowPresetDesc = "ShowPresetDescription";
+        public const string ExcludedExtensions = "ExcludedFileExtensions";
+        public static string RecursiveFolderScan = "RecursiveFolderScan";
     }
 }

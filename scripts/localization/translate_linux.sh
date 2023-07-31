@@ -1,4 +1,6 @@
-# Usage: Set environment variables, then run ./translate_windows.sh
+#!/usr/bin/env bash
+#
+# Usage: Set environment variables, then run ./translate_linux.sh
 # Using your own HandBrake Fork, example:
 #     export HB_GIT_REPO=https://github.com/<your-username>/HandBrake.git
 #     export HB_BRANCH_NAME=translation_update
@@ -86,7 +88,7 @@ echo "- Creating a Git commit"
 cd HandBrake/gtk/po
 git add *.po
 cd ../../
-git commit -m "Updating Windows Translations"
+git commit -m "Updating Linux UI Translations"
 
 echo ""
 echo "Done: git push then create a pull request on GitHub."

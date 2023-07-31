@@ -47,14 +47,7 @@ namespace HandBrakeWPF.Services.Queue
 
         private void UserSettingService_SettingChanged(object sender, HandBrakeWPF.EventArgs.SettingChangedEventArgs e)
         {
-            if (e.Key == UserSettingConstants.SimultaneousEncodes)
-            {
-                this.maxAllowedInstances = this.userSettingService.GetUserSetting<int>(UserSettingConstants.SimultaneousEncodes);
-                if (this.maxAllowedInstances > Utilities.SystemInfo.MaximumSimultaneousInstancesSupported)
-                {
-                    this.maxAllowedInstances = Utilities.SystemInfo.MaximumSimultaneousInstancesSupported;
-                }
-            }
+            this.Init();
         }
 
         public int TotalActiveInstances
@@ -97,8 +90,8 @@ namespace HandBrakeWPF.Services.Queue
                 return;
             } 
 
-            // NVEnc Support - (Most cards support 3 but not all)
-            this.totalNvidiaInstances = 3;
+            // NVEnc Support - (Most cards now support 5 with up-to-date drivers)
+            this.totalNvidiaInstances = 5;
 
             // VCN Support
             this.totalVceInstances = 3;

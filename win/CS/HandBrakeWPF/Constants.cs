@@ -38,6 +38,11 @@ namespace HandBrakeWPF
         public const string Preset = "{preset}"; 
         public const string QualityType = "{quality_type}";
         public const string EncoderBitDepth = "{encoder_bit_depth}";
+        public const string StorageWidth = "{width}";
+        public const string StorageHeight = "{height}";
+        public const string Codec = "{codec}";
+        public const string EncoderDisplay = "{encoder-display}";
+        public const string Encoder = "{encoder}";
 
         /* Auto-name Path Constants */
         public const string Source = "{source}";

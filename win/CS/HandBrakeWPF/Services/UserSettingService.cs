@@ -338,6 +338,9 @@ namespace HandBrakeWPF.Services
             defaults.Add(UserSettingConstants.SaveLogWithVideo, false);
             defaults.Add(UserSettingConstants.ClearOldLogs, true);
 
+            defaults.Add(UserSettingConstants.ExcludedExtensions, new List<string> { "png", "jpg", "srt", "ass", "ssa", "txt" });
+            defaults.Add(UserSettingConstants.RecursiveFolderScan, false);
+            
             // Preview
             defaults.Add(UserSettingConstants.LastPreviewDuration, 30);
             defaults.Add(UserSettingConstants.UseExternalPlayer, false);
@@ -357,7 +360,7 @@ namespace HandBrakeWPF.Services
             defaults.Add(UserSettingConstants.ExtendedQueueDisplay, true);
             defaults.Add(UserSettingConstants.HardwareDetectTimeoutSeconds, 12);
 
-            
+
             return defaults;
         }
 
